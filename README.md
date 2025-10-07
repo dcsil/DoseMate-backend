@@ -46,10 +46,12 @@ source .venv/bin/activate
 python -m pip install --upgrade pip
 ```
 
-## 4. Install FastAPI and Dependencies
+## 4. Install Project Dependencies
+
+From the root of your project:
 
 ```bash
-pip install "fastapi[standard]"
+pip install -r requirements.txt
 ```
 
 ## 5. Run the Server
