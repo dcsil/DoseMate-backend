@@ -6,8 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.db.database import engine, Base
 from app.core.config import settings
 
-# (later we’ll import and include routers)
-# from app.auth.routes_google import router as google_auth_router
+from app.auth.routes_google import router as google_auth_router
 
 app = FastAPI(
     title="DoseMate API",
@@ -34,7 +33,7 @@ app.add_middleware(
 )
 
 # ---- Include Routers ----
-# app.include_router(google_auth_router, prefix="/auth/google", tags=["auth-google"])
+app.include_router(google_auth_router, prefix="/auth/google", tags=["auth-google"])
 
 # ---- Health Check ----
 @app.get("/", tags=["system"])
