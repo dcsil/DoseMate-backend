@@ -121,15 +121,17 @@ async def extract_medicine_from_image(file: UploadFile = File(...)):
         image = image.convert("L")
         extracted_text = pytesseract.image_to_string(image)
 
-        print(f"Extracted text: {extracted_text}")
+        # Clean up extracted text by replacing newlines and extra spaces
+        extracted_text = ' '.join(extracted_text.split())
+        print(f"Extracted Text: {extracted_text}")
 
-        #will change this to an API call later
-        medicine_keywords = ["metformin", "lisinopril", "atorvastatin", "aspirin"]
-        detected_medicines = [
-            keyword.capitalize()
-            for keyword in medicine_keywords
-            if keyword in extracted_text.lower()
-        ]
+        # will change this to an API call later
+        medicine_keywords = ["metformin", "lisinopril", "atorvastatin", "aspirin", "Advil"]
+        detected_medicines = []
+
+        for k in medicine_keywords:
+            if k in extracted_text:
+                detected_medicines.append(k)
 
         return {
             "extracted_text": extracted_text,
