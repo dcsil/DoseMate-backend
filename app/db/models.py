@@ -3,6 +3,8 @@ from datetime import datetime
 from sqlalchemy import Column, String, DateTime, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from app.db.database import Base
+from pydantic import BaseModel
+from typing import Optional
 
 class User(Base):
     __tablename__ = "users"
@@ -19,3 +21,11 @@ class User(Base):
 
     def __repr__(self) -> str:
         return f"<User id={self.id} email={self.email} provider={self.auth_provider}>"
+
+class Medicine(BaseModel):
+    brand_name: str
+    generic_name: str
+    manufacturer: str
+    indications: Optional[str]
+    dosage: Optional[str]
+    # side_effect: Optional[str]
