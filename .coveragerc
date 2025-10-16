@@ -1,0 +1,5 @@
+[run]
+# Measure coverage across the whole repo (no omits) so report includes tests
+source =
+
+[report]
