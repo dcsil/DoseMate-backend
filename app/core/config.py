@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     google_redirect_uri: str
     app_deep_link: str
     oauth2_scheme: ClassVar[OAuth2PasswordBearer] = OAuth2PasswordBearer(tokenUrl="token")
+    openai_api_key: str
 
     class Config:
         env_file = ".env"
