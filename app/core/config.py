@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     google_client_secret: str
     google_redirect_uri: str
     app_deep_link: str
+    openai_api_key: str
 
     class Config:
         env_file = ".env"
