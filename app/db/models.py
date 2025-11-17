@@ -2,21 +2,20 @@ import uuid
 from datetime import datetime, date
 from sqlalchemy import (
     Column,
-    Integer,
     String,
-    Enum,
-    ForeignKey,
     Boolean,
     Date,
     DateTime,
-    JSON
+    Text,
+    ForeignKey,
+    Enum,
+    ARRAY
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from app.db.database import Base
 from pydantic import BaseModel
-from typing import Optional
-
+from typing import Optional, List
 
 # ---------- USER MODEL ----------
 class User(Base):
@@ -40,47 +39,50 @@ class User(Base):
     def __repr__(self) -> str:
         return f"<User id={self.id} email={self.email} provider={self.auth_provider}>"
 
-
-# ---------- API MODEL (not a DB table) ----------
+# ---------- API MODEL (not DB table) ----------
 class Medicine(BaseModel):
     brand_name: str
-    generic_name: str
-    manufacturer: str
-    indications: Optional[str]
-    dosage: Optional[str]
-
+    generic_name: Optional[str] = None
+    manufacturer: Optional[str] = None
+    indications: Optional[str] = None
+    dosage: Optional[str] = None
+    purpose: Optional[str] = None
 
 # ---------- MEDICATION ----------
 class Medication(Base):
     __tablename__ = "medications"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     brand_name = Column(String, nullable=False)
     generic_name = Column(String, nullable=True)
     dosage = Column(String, nullable=True)
-    notes = Column(String, nullable=True)
-    image_metadata = Column(JSON, nullable=True)
+    manufacturer = Column(String, nullable=True)
+    indications = Column(Text, nullable=True)
+    purpose = Column(String, nullable=True)
+
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
     user = relationship("User", back_populates="medications")
     schedules = relationship("MedicationSchedule", back_populates="medication", cascade="all, delete-orphan")
 
-
 # ---------- MEDICATION SCHEDULE ----------
 class MedicationSchedule(Base):
     __tablename__ = "medication_schedules"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    medication_id = Column(UUID(as_uuid=True), ForeignKey("medications.id"), nullable=False)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    medication_id = Column(UUID(as_uuid=True), ForeignKey("medications.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
-    start_date = Column(Date, nullable=False)
+    frequency = Column(String, nullable=False)
+    time_of_day = Column(ARRAY(String), nullable=True)
+    quantity = Column(String, nullable=True)
+    as_needed = Column(Boolean, default=False)
+    food_instructions = Column(String, nullable=True)
+    start_date = Column(Date, default=date.today)
     end_date = Column(Date, nullable=True)
-    frequency = Column(String, nullable=False)  # e.g. "daily", "weekly", "as_needed"
-    times_per_day = Column(Integer, default=1)
-    time_of_day = Column(JSON, nullable=True)  # e.g. ["08:00", "20:00"]
+
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
@@ -100,7 +102,6 @@ class DoseLog(Base):
     scheduled_time = Column(DateTime, nullable=False)
     taken_time = Column(DateTime, nullable=True)
     status = Column(Enum("pending", "taken", "missed", name="dose_status"), default="pending")
-    notes = Column(String, nullable=True)
 
     # Relationships
     user = relationship("User", back_populates="dose_logs")
