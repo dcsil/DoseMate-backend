@@ -79,6 +79,9 @@ async def google_callback(request: Request, db: AsyncSession = Depends(get_db)):
             name=user_info.get("name"),
             picture=user_info.get("picture"),
         )
+        # Ensure user is committed to DB
+        await db.commit()
+        await db.refresh(user)
 
     # Create JWT token
     payload = {

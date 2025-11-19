@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.db.database import engine, Base
-from app.routes import auth, medicines, medications, ocr, medication_requests, profile, users
+from app.routes import auth, medicines, ocr, user_medications, medication_requests, profile, users
 
 app = FastAPI(
     title="DoseMate API",
@@ -22,12 +22,9 @@ app.add_middleware(
 # ---- Startup / Shutdown ----
 @app.on_event("startup")
 async def on_startup():
-    try:
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-    except Exception as e:
-        print(f"Warning: Could not connect to database: {e}")
-        print("Continuing without database connection...")
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    print("✅ Database initialized.")
 
 @app.on_event("shutdown")
 async def on_shutdown():
@@ -41,11 +38,12 @@ async def health_check():
 # ---- Register Routes ----
 app.include_router(auth.router, prefix="/auth/google", tags=["Google-auth"])
 app.include_router(medicines.router, prefix="/medicines", tags=["OpenFDA-medicines"])
-app.include_router(medications.router, prefix="/medications", tags=["Medications"])
 app.include_router(ocr.router, prefix="/ocr", tags=["OCR"])
-app.include_router(medication_requests.router, prefix="/medications", tags=["Medication-requests"])
+app.include_router(user_medications.router, prefix="/user/medications", tags=["User Medications"])
+app.include_router(medication_requests.router, prefix="/medication-requests", tags=["Medication-requests"])
 app.include_router(profile.router, prefix="/profile", tags=["Profile"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
+
 
 # ---- Run Locally ----
 if __name__ == "__main__":
