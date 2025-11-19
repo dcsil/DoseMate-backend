@@ -12,7 +12,7 @@ from app.medications.services import medication_service
 from datetime import datetime, timedelta
 import json
 
-router = APIRouter(prefix="/medications", tags=["medications"])
+router = APIRouter()
 
 # In-memory cache (consider using Redis in production)
 medication_cache = {}
