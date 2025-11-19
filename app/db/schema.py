@@ -1,5 +1,5 @@
 from datetime import datetime, date
-from typing import List, Optional
+from typing import List, Literal, Optional
 from pydantic import BaseModel, EmailStr, UUID4
 
 
@@ -23,6 +23,34 @@ class UserRead(UserBase):
     id: UUID4
     created_at: datetime
     updated_at: datetime
+
+    class Config:
+        orm_mode = True
+
+
+# ---------------------------------------------------------------------------
+# USER PROFILE SCHEMAS
+# ---------------------------------------------------------------------------
+
+SleepSchedule = Literal["early", "normal", "late", "irregular"]
+ActivityLevel = Literal["low", "moderate", "high", "athlete"]
+
+class UserProfileBase(BaseModel):
+    age: Optional[int] = None
+    conditions: List[str] = []
+    allergies: Optional[str] = None
+    sleep_schedule: Optional[SleepSchedule] = None
+    activity_level: Optional[ActivityLevel] = None
+
+class UserProfileCreate(UserProfileBase):
+    user_id: UUID4  
+
+class UserProfileUpdate(UserProfileBase):
+    pass
+
+class UserProfileRead(UserProfileBase):
+    id: int
+    user_id: UUID4
 
     class Config:
         orm_mode = True

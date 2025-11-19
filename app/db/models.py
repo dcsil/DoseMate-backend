@@ -9,9 +9,10 @@ from sqlalchemy import (
     Text,
     ForeignKey,
     Enum,
-    ARRAY
+    ARRAY,
+    Integer
 )
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.orm import relationship
 from app.db.database import Base
 from pydantic import BaseModel
@@ -35,9 +36,27 @@ class User(Base):
     medications = relationship("Medication", back_populates="user", cascade="all, delete-orphan")
     schedules = relationship("MedicationSchedule", back_populates="user", cascade="all, delete-orphan")
     dose_logs = relationship("DoseLog", back_populates="user", cascade="all, delete-orphan")
+    profile = relationship("UserProfile", back_populates="user" , cascade="all, delete-orphan", single_parent=True, uselist=False)
 
     def __repr__(self) -> str:
         return f"<User id={self.id} email={self.email} provider={self.auth_provider}>"
+
+
+# ---------- USER PROFILE ----------
+class UserProfile(Base):
+    __tablename__ = "user_profiles"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), unique=True, index=True)
+
+    age = Column(Integer, nullable=True)
+    conditions = Column(ARRAY(String), nullable=False, default=[])
+    allergies = Column(String, nullable=True)
+    sleep_schedule = Column(String, nullable=True)   # "early" | "normal" | "late" | "irregular"
+    activity_level = Column(String, nullable=True)   # "low" | "moderate" | "high" | "athlete"
+
+    user = relationship("User", back_populates="profile", lazy="joined")
+
 
 # ---------- API MODEL (not DB table) ----------
 class Medicine(BaseModel):
