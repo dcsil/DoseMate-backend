@@ -16,6 +16,7 @@ GOOGLE_USERINFO_URL = "https://openidconnect.googleapis.com/v1/userinfo"
 # Step 1: Redirect user to Google OAuth consent screen
 @router.get("/")
 async def login_google():
+    print("google_client_id =", settings.google_client_id)
     params = {
         "client_id": settings.google_client_id,
         "redirect_uri": settings.google_redirect_uri,
@@ -26,6 +27,7 @@ async def login_google():
     }
     url = "https://accounts.google.com/o/oauth2/v2/auth"
     redirect_url = httpx.URL(url, params=params)
+    # print("GOOGLE AUTH URL:", redirect_url)  
     return RedirectResponse(str(redirect_url))
 
 # Step 2: Handle Google callback
