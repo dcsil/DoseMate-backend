@@ -9,7 +9,8 @@ from sqlalchemy import (
     Text,
     ForeignKey,
     Enum,
-    ARRAY
+    ARRAY,
+    Integer
 )
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.orm import relationship
