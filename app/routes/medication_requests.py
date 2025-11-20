@@ -1,5 +1,7 @@
+from uuid import UUID
 from fastapi import APIRouter, HTTPException, Depends, Query
 from typing import List
+from pydantic import UUID1
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.database import get_db
 from app.db.models import Medicine
@@ -20,7 +22,7 @@ CACHE_DURATION = timedelta(days=30)
 
 @router.get("/{medication_id}/details", response_model=MedicationDetails)
 async def get_medication_details(
-    medication_id: int,
+    medication_id: UUID,
     name: str = Query(..., description="Medication name"),
     strength: str = Query(..., description="Medication strength"),
     db: AsyncSession = Depends(get_db)
