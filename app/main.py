@@ -7,6 +7,7 @@ from app.db.database import engine, Base
 from app.core.config import settings
 
 from app.auth.routes_google import router as google_auth_router
+from app.users.routes_progress import router as progress_router
 
 app = FastAPI(
     title="DoseMate API",
@@ -34,6 +35,7 @@ app.add_middleware(
 
 # ---- Include Routers ----
 app.include_router(google_auth_router, prefix="/auth/google", tags=["auth-google"])
+app.include_router(progress_router, tags=["progress"])  # endpoints: /users/{user_id}/progress
 
 # ---- Health Check ----
 @app.get("/", tags=["system"])
