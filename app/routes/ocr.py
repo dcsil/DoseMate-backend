@@ -1,7 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from app.utils.ocr import extract_text_from_image
 
-router = APIRouter(prefix="/ocr", tags=["OCR"])
+router = APIRouter()
 
 @router.post("/extract")
 async def extract_medicine_from_image(file: UploadFile = File(...)):
