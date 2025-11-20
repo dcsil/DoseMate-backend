@@ -66,3 +66,53 @@ Confirm it works by visiting the forwarding link in your browser.
 #### 7. Setting up env
 
 Use `.env.template` as reference and fill in required keys.
+
+---
+
+## 📈 Progress Tracking API (New)
+
+Endpoints:
+- `GET /users/{user_id}/progress?metric_name=&limit=` – list latest progress entries (default limit 50)
+- `POST /users/{user_id}/progress` – create a new progress entry. Body: `{ "metric_name": "streak_days", "value": 5, "int_value": 5 }`
+
+Example response item:
+```json
+{
+	"id": "4c1aef0d-...",
+	"user_id": "9b821e33-...",
+	"metric_name": "streak_days",
+	"value": 5.0,
+	"int_value": 5,
+	"created_at": "2025-10-16T12:34:56.000Z"
+}
+```
+
+### Frontend Fetch Examples (TypeScript)
+```ts
+const API = process.env.API_BASE;
+
+export async function fetchProgress(userId: string, metricName?: string) {
+	const params = new URLSearchParams();
+	if (metricName) params.append('metric_name', metricName);
+	const res = await fetch(`${API}/users/${userId}/progress?${params}`);
+	if (!res.ok) throw new Error('Failed progress fetch');
+	return res.json();
+}
+
+export async function createProgress(userId: string, metric: string, value: number, intValue?: number) {
+	const res = await fetch(`${API}/users/${userId}/progress`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ metric_name: metric, value, int_value: intValue })
+	});
+	if (!res.ok) throw new Error('Failed progress create');
+	return res.json();
+}
+```
+
+### Notes / Next Steps
+- Add auth guard (require user ID from token rather than path).
+- Add aggregation endpoint (e.g. latest value only `/users/{id}/progress/latest`).
+- Consider pruning old entries or summarizing daily metrics.
+- Add tests for progress CRUD (mock DB / add integration test once DB available).
+
