@@ -104,7 +104,7 @@ async def create_user_medication(
         user_id=current_user.user_id,
         frequency=sched_data.frequency,
         time_of_day=sched_data.times,
-        days=sched_data.days,
+        days=["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
         quantity=sched_data.quantity,
         strength=sched_data.strength,
         as_needed=sched_data.asNeeded,
