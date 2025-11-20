@@ -1,13 +1,8 @@
-# app/main.py
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from app.db.database import engine, Base
-from app.core.config import settings
-
-from app.auth.routes_google import router as google_auth_router
-from app.users.routes_progress import router as progress_router
+from app.routes import auth, medicines, ocr, reminders, user_medications, medication_requests, profile, users
 
 app = FastAPI(
     title="DoseMate API",
@@ -16,43 +11,40 @@ app = FastAPI(
 )
 
 # ---- CORS Setup ----
-# In dev, allow local React Native / Expo host. In prod, lock this down.
-origins = [
-    "http://localhost",
-    "http://localhost:3000",
-    "exp://127.0.0.1:19000",
-    "exp://localhost:19000",
-    "dosemate://",  # deep link scheme
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ---- Include Routers ----
-app.include_router(google_auth_router, prefix="/auth/google", tags=["auth-google"])
-app.include_router(progress_router, tags=["progress"])  # endpoints: /users/{user_id}/progress
+# ---- Startup / Shutdown ----
+@app.on_event("startup")
+async def on_startup():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    print("✅ Database initialized.")
+
+@app.on_event("shutdown")
+async def on_shutdown():
+    print("🛑 Shutting down DoseMate API...")
 
 # ---- Health Check ----
 @app.get("/", tags=["system"])
 async def health_check():
     return {"status": "ok", "service": "DoseMate API"}
 
-# ---- Startup / Shutdown Events ----
-@app.on_event("startup")
-async def on_startup():
-    # Create tables if they don't exist yet (for early dev)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    print("✅ Database connected and models ready.")
+# ---- Register Routes ----
+app.include_router(auth.router, prefix="/auth/google", tags=["Google-auth"])
+app.include_router(medicines.router, prefix="/medicines", tags=["OpenFDA-medicines"])
+app.include_router(ocr.router, prefix="/ocr", tags=["OCR"])
+app.include_router(user_medications.router, prefix="/user/medications", tags=["User Medications"])
+app.include_router(medication_requests.router, prefix="/medication-requests", tags=["Medication-requests"])
+app.include_router(profile.router, prefix="/profile", tags=["Profile"])
+app.include_router(users.router, prefix="/users", tags=["Users"])
+app.include_router(reminders.router, prefix="/reminders", tags=["Reminders"])
 
-@app.on_event("shutdown")
-async def on_shutdown():
-    print("🛑 Shutting down DoseMate API...")
 
 # ---- Run Locally ----
 if __name__ == "__main__":
