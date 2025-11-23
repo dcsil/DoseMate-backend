@@ -28,6 +28,12 @@ class UserRead(UserBase):
         orm_mode = True
 
 
+class AuthResponse(BaseModel):
+    user: UserRead
+    access_token: str
+    token_type: str = "bearer"
+
+
 # ---------------------------------------------------------------------------
 # USER PROFILE SCHEMAS
 # ---------------------------------------------------------------------------
