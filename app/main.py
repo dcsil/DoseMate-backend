@@ -36,7 +36,7 @@ async def health_check():
     return {"status": "ok", "service": "DoseMate API"}
 
 # ---- Register Routes ----
-app.include_router(auth.router, prefix="/auth/google", tags=["Google-auth"])
+app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(medicines.router, prefix="/medicines", tags=["OpenFDA-medicines"])
 app.include_router(ocr.router, prefix="/ocr", tags=["OCR"])
 app.include_router(user_medications.router, prefix="/user/medications", tags=["User Medications"])

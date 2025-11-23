@@ -32,6 +32,8 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
+    password_hash = Column(String(255), nullable=True)
+
     # Relationships
     medications = relationship("Medication", back_populates="user", cascade="all, delete-orphan")
     schedules = relationship("MedicationSchedule", back_populates="user", cascade="all, delete-orphan")
