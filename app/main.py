@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.db.database import engine, Base
-from app.routes import auth, medicines, ocr, reminders, user_medications, medication_requests, profile, users
+from app.routes import auth, medicines, ocr, reminders, user_medications, medication_requests, profile, users, reports
 
 app = FastAPI(
     title="DoseMate API",
@@ -44,6 +44,7 @@ app.include_router(medication_requests.router, prefix="/medication-requests", ta
 app.include_router(profile.router, prefix="/profile", tags=["Profile"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(reminders.router, prefix="/reminders", tags=["Reminders"])
+app.include_router(reports.router, prefix="/reminders", tags=["reports"])
 
 
 # ---- Run Locally ----
