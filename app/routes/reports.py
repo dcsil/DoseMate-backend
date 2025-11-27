@@ -5,18 +5,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 from app.db.database import get_db
-from app.db.models import Medication, MedicationSchedule, DoseLog, User, UserProfile
-from app.core.auth import get_current_user
+from app.db.models import MedicationSchedule, DoseLog, User, UserProfile
 from jose import jwt, JWTError
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak
-from reportlab.lib.enums import TA_CENTER, TA_LEFT
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.enums import TA_CENTER
 from io import BytesIO
 from app.core.config import settings
-import pytz
 
 router = APIRouter()
 
@@ -49,9 +47,6 @@ async def get_current_user_from_token(
         raise HTTPException(status_code=401, detail="Could not validate credentials")
 
 
-# ============================================================================
-# GENERATE WEEKLY REPORT (PDF)
-# ============================================================================
 @router.get("/reports/weekly")
 async def generate_weekly_report(
     db: AsyncSession = Depends(get_db),
@@ -329,9 +324,6 @@ async def generate_weekly_report(
 
 # Add this to your reports_routes.py file after the weekly report
 
-# ============================================================================
-# GENERATE MONTHLY REPORT (PDF) - 30 DAYS
-# ============================================================================
 @router.get("/reports/monthly")
 async def generate_monthly_report(
     db: AsyncSession = Depends(get_db),

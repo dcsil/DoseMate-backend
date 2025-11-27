@@ -11,9 +11,7 @@ import pytz
 
 router = APIRouter()
 
-# ============================================================================
-# EXISTING ENDPOINT - Keep as is
-# ============================================================================
+
 @router.get("/today")
 async def get_todays_reminders(
     db: AsyncSession = Depends(get_db),
@@ -79,9 +77,6 @@ async def get_todays_reminders(
     return reminders
 
 
-# ============================================================================
-# NEW ENDPOINT 1: TODAY'S ADHERENCE STATS
-# ============================================================================
 @router.get("/adherence/today")
 async def get_today_adherence(
     db: AsyncSession = Depends(get_db),
@@ -123,9 +118,6 @@ async def get_today_adherence(
     }
 
 
-# ============================================================================
-# NEW ENDPOINT 2: WEEKLY ADHERENCE (Last 7 Days)
-# ============================================================================
 @router.get("/adherence/week")
 async def get_weekly_adherence(
     db: AsyncSession = Depends(get_db),
@@ -200,9 +192,6 @@ async def get_weekly_adherence(
     }
 
 
-# ============================================================================
-# NEW ENDPOINT 3: MONTHLY ADHERENCE (Last 30 Days)
-# ============================================================================
 @router.get("/adherence/month")
 async def get_monthly_adherence(
     db: AsyncSession = Depends(get_db),
@@ -274,9 +263,6 @@ async def get_monthly_adherence(
     }
 
 
-# ============================================================================
-# NEW ENDPOINT 4: RECENT ACTIVITY (Last Taken Doses)
-# ============================================================================
 @router.get("/recent-activity")
 async def get_recent_activity(
     limit: int = 10,
@@ -334,9 +320,6 @@ async def get_recent_activity(
     return activities
 
 
-# ============================================================================
-# EXISTING ENDPOINTS - Keep as is
-# ============================================================================
 @router.post("/{dose_id}/mark-taken")
 async def mark_taken(
     dose_id: str,
@@ -383,8 +366,5 @@ async def snooze_dose(
     }
 
 
-# ============================================================================
-# HELPER FUNCTION
-# ============================================================================
 def parse_time_12h(time_str: str):
     return datetime.strptime(time_str, "%I:%M %p").time()
