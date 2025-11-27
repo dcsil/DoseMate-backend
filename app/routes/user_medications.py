@@ -46,7 +46,7 @@ class MedicationScheduleOut(BaseModel):
 
     frequency: str
     time_of_day: Optional[List[str]] = None
-    days: Optional[List[str]] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    days: Optional[List[str]] = []
     quantity: Optional[str] = None
     strength: Optional[str] = None
 
@@ -104,7 +104,7 @@ async def create_user_medication(
         user_id=current_user.user_id,
         frequency=sched_data.frequency,
         time_of_day=sched_data.times,
-        days=["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        days=sched_data.days,
         quantity=sched_data.quantity,
         strength=sched_data.strength,
         as_needed=sched_data.asNeeded,
