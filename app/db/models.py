@@ -113,6 +113,11 @@ class MedicationSchedule(Base):
     start_date = Column(Date, default=date.today)
     end_date = Column(Date, nullable=True)
 
+    # Adaptive timing fields
+    preferred_time = Column(String, nullable=True)  # AI-suggested optimal time
+    adapted_from_time = Column(String, nullable=True)  # Original scheduled time
+    adaptation_score = Column(Integer, nullable=True)  # Confidence score 0-100
+
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
@@ -135,7 +140,8 @@ class DoseLog(Base):
 
     scheduled_time = Column(DateTime, nullable=False)
     taken_time = Column(DateTime, nullable=True)
-    status = Column(Enum("pending", "taken", "missed", name="dose_status"), default="pending")
+    status = Column(Enum("pending", "taken", "missed", "snoozed", name="dose_status"), default="pending")
+    snoozed = Column(Boolean, default=False)  # True if user snoozed or took >20 min late
 
     # Relationships
     user = relationship("User", back_populates="dose_logs")
