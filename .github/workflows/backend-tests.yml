@@ -10,11 +10,6 @@ jobs:
   test-backend:
     runs-on: ubuntu-latest
 
-    # All "run" steps happen inside the backend folder
-    defaults:
-      run:
-        working-directory: ./DoseMate-backend
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -31,7 +26,6 @@ jobs:
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
           else
-            # fallback if you don't have a requirements.txt yet
             pip install pytest pytest-cov anyio
           fi
 
@@ -43,6 +37,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: backend-coverage
-          # coverage.xml is created in the working directory (DoseMate-backend),
-          # so from the repo root the path is:
-          path: DoseMate-backend/coverage.xml
+          path: coverage.xml
