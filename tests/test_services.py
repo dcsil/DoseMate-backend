@@ -53,7 +53,7 @@ def test_get_medication_prompt_includes_name_and_strength():
 
 
 @pytest.mark.anyio("asyncio")
-async def test_fetch_medication_details_parses_valid_json(monkeypatch):
+async def test_fetch_medication_details_parses_valid_json():
     # Fake JSON from "OpenAI"
     fake_json = json.dumps(
         {
@@ -81,7 +81,6 @@ async def test_fetch_medication_details_parses_valid_json(monkeypatch):
     )
 
     service = MedicationService()
-    # Swap out the real AsyncOpenAI client with our fake one
     service.client = FakeClient(content=fake_json)
 
     result = await service.fetch_medication_details("Tylenol", "500mg")
@@ -93,7 +92,7 @@ async def test_fetch_medication_details_parses_valid_json(monkeypatch):
 
 
 @pytest.mark.anyio("asyncio")
-async def test_fetch_medication_details_strips_markdown_wrappers(monkeypatch):
+async def test_fetch_medication_details_strips_markdown_wrappers():
     # Simulate OpenAI returning markdown-wrapped JSON
     wrapped = "```json\n" + json.dumps({"genericName": "Acetaminophen"}) + "\n```"
 
@@ -116,7 +115,6 @@ async def test_fetch_medication_details_raises_value_error_on_bad_json():
     with pytest.raises(ValueError) as excinfo:
         await service.fetch_medication_details("Tylenol", "500mg")
 
-    # Optional: check the error message contains our custom text
     assert "Failed to parse OpenAI response" in str(excinfo.value)
 
 
